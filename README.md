@@ -4,6 +4,7 @@
 
 ### PROJECT NAME
 Rapid Team Building Web Builder
+Recording: https://www.loom.com/share/4d96624e9a8146caabbc99ea804092f2
     
 ### DESCRIPTION
 A command-line application that accepts a users input to determine the members of a team.  A user can choose to add a manager, engineer, and/or an intern.  There are role based questions.  The result is HTML document containining cards that display all of the information provided to the application. 
