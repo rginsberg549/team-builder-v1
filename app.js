@@ -9,6 +9,7 @@ const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
+const Employee = require("./lib/Employee");
 
 
 // Write code to use inquirer to gather information about the development team members,
@@ -67,19 +68,61 @@ const questions = [
         default: 100,
         message: 'Enter Office Number',
         when: (answers) => answers.role === 'Manager'
-    }
+    },
+    {
+      type: 'input',
+      name: 'github',
+      default: 'rginsberg549',
+      message: 'What is your github username?',
+      when: (answers) => answers.role === 'Engineer'
+  },
+  {
+    type: 'input',
+    name: 'school',
+    default: 'agoura',
+    message: 'What school did you go to?',
+    when: (answers) => answers.role === 'Intern'
+}
+
 ]
 
 function promptUser() {
-  return inquirer.prompt(questions);
+  inquirer.registerPrompt('recursive', require('inquirer-recursive'));
+  
+  return inquirer.prompt({
+    type: 'recursive',
+    message: "Would you like to add another team member?",
+    prompts: questions
+  });
 }
 
+function employeeFactory(answers) {
+  if(answers.role === 'Manager')
+    return new Manager(answers.name, answers.id, answers.email, answers.officeNumber);
 
+  if(answers.role === 'Engineer')
+    return new Engineer(answers.name, answers.id, answers.email, answers.github);
+
+  if(answers.role === 'Intern');
+    return new Intern(answers.name, answers.id, answers.email, answers.school)
+};
+
+function build_team(employees) {
+  if (!fs.existsSync(OUTPUT_DIR)) {
+    console.log(OUTPUT_DIR)
+    fs.mkdirSync(OUTPUT_DIR);
+  }
+  fs.writeFile(outputPath, render(employees),function(err, result) {
+    console.log(outputPath)
+    if(err) {
+      console.log('error', err)
+    };
+  })};
 
 promptUser()
   .then(function(data) {
-      render(data);
-    return console.log(data);
+    const employees = data.undefined.map((element)=> employeeFactory(element))
+    return build_team(employees);
   })
   .catch(function(err) {
     console.log(err);
